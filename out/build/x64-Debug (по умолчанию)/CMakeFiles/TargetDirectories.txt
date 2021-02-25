@@ -1,5 +1,0 @@
-E:/repos/Labs4sem/out/build/x64-Debug (по умолчанию)/CMakeFiles/edit_cache.dir
-E:/repos/Labs4sem/out/build/x64-Debug (по умолчанию)/CMakeFiles/rebuild_cache.dir
-E:/repos/Labs4sem/out/build/x64-Debug (по умолчанию)/lab1/CMakeFiles/lab1.dir
-E:/repos/Labs4sem/out/build/x64-Debug (по умолчанию)/lab1/CMakeFiles/edit_cache.dir
-E:/repos/Labs4sem/out/build/x64-Debug (по умолчанию)/lab1/CMakeFiles/rebuild_cache.dir
