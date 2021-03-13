@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <vector>
 #include  <utility>
+#include <list>
 
 template <typename It>
 It merge(It bg1, It end1, It bg2, It end2, It dst, bool preorder) { //return past  end
@@ -115,7 +116,7 @@ void merge_sort(T& collection) {
 
 
 int main(void) {
-	std::vector<int> v1 = { 0,0,1,1,3,6,0,5,1,3,6,8,2,4,7,4,1,3,5,6,8,4,1,3,4,4,3};
+	std::list<int> v1 = { -5,-125,0,0,1,1,3,6,0,5,1,3,6,8,2,4,7,4,1,3,5,6,8,4,1,3,4,4,3};
 	for (auto& item : v1) {
 		printf("%d ", item);
 	}

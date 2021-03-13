@@ -146,7 +146,7 @@ public:
 		//}
 		return pos_after;
 	}
-	iterator find(const Key value) {
+	iterator find(const Key& value) {
 		auto hash = Hash()(value) % size_table;
 		auto item = table[hash];
 		while (item != nullptr) {
@@ -166,7 +166,7 @@ public:
 	iterator end() {
 		return iterator(table, size_table, table[size_table + 1], size_table + 1);
 	}
-	void swap(unordered_set rhs) {
+	void swap(unordered_set& rhs) {
 		std::swap(table, rhs.table);
 		std::swap(size_table, rhs.size_table);
 	}
@@ -185,7 +185,6 @@ public:
 	~unordered_set() {
 		clear();
 		delete table;
-	}
-
+	} 
 
 };
