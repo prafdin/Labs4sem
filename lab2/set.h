@@ -16,7 +16,7 @@ class set {
 		node* parent;
 
 		node(node* parent, const int key) : key(key), height(1), parent(parent), left(nullptr), right(nullptr) { }
-		node() : key(Key()),parent(nullptr),left(nullptr),right(nullptr){}
+		node() : key(Key()), parent(nullptr), left(nullptr), right(nullptr) {}
 		node(const node&) = delete;
 
 		node& operator=(const node&) = delete;
@@ -27,7 +27,7 @@ class set {
 			return key != rhs.key;
 		}
 	};
-
+	using pair = std::pair<node*, bool>; //if flag true , we del node in right subtree 
 	node* _root;
 	node* _end;
 	size_t _size;
@@ -83,6 +83,8 @@ class set {
 		q->parent = p->parent;
 		p->parent = q;
 		p->left = q->right;
+		if (q->right != nullptr)
+			q->right->parent = p;
 		q->right = p;
 		update_height(p);
 		update_height(q);
@@ -94,6 +96,8 @@ class set {
 		p->parent = q->parent;
 		q->parent = p;
 		q->right = p->left;
+		if (p->left != nullptr)
+			p->left->parent = q;
 		p->left = q;
 		update_height(q);
 		update_height(p);
@@ -120,8 +124,66 @@ class set {
 		return p;
 	}
 
-	//todo delete duplicate
+	node* find(const Key& key) {
+		auto item = _root;
+		while (item.key != key) {
+			if (less(key, item))
+				item = item->left;
+			else
+				item = item->right;
+		}
+		if (item == _root && item.key != key)
+			return nullptr;
+		else
+			return item;
+	}
 
+	node* delete_min_in_right_subtree(node** root) {
+		std::stack<pair> s;
+		auto place = *root;
+		if (place->left == nullptr && place->right == nullptr) {
+			place->parent->right = nullptr;
+			return place;
+		}
+		while (place->left != nullptr) {
+			s.push({ place ,false });
+			place = place->left;
+		}
+		auto right_branch = place->right;
+		if (right_branch != nullptr) {
+			right_branch->parent = place->parent;
+			place->parent->left = right_branch;
+		}
+		else
+			place->parent->left = nullptr;
+		while (s.size() != 0) {
+			auto balanced = s.top();
+			s.pop();
+			if (s.size() == 0) { //balanced == root
+				*root = balance(balanced);
+				return place;
+			}
+			auto parent_balanced = s.top();
+			parent_balanced->left = balance(balanced);
+		}
+		return place;
+	}
+
+	void balance_stack(std::stack<pair> s) {
+		while (s.size() != 0) {
+			auto balanced = s.top();
+			s.pop();
+			if (s.size() == 0) { //balanced == root
+				_root = balance(balanced.first);
+				break;
+			}
+			auto parent_balanced = s.top();
+			if (parent_balanced.second == true) //if balanced right child
+				parent_balanced.first->right = balance(balanced.first);
+			else
+				parent_balanced.first->left = balance(balanced.first);
+		}
+	}
 public:
 	class iterator {
 		node* item;
@@ -197,9 +259,7 @@ public:
 			clear();
 		}
 	};
-
 	iterator insert(const Key& key) {
-		using pair = std::pair<node*, bool>; //if flag true , we add node in right subtree 
 		std::stack<pair> s;
 		auto place = _root;
 		while (place != nullptr) {
@@ -222,22 +282,48 @@ public:
 			else // if inserted item left child
 				place = parent.first->left = new node(parent.first, key);
 		}
-		while (s.size() != 0) {
-			auto balanced = s.top();
-			s.pop();
-			if (s.size() == 0) { //balanced == root
-				_root = balance(balanced.first);
-				return iterator(place);
-			}
-			auto parent_balanced = s.top();
-			if (parent_balanced.second == true) //if balanced right child
-				parent_balanced.first->right = balance(balanced.first);
-			else
-				parent_balanced.first->left = balance(balanced.first);
-		}
+		balance_stack(s);
 		return iterator(place);
 	}
+	iterator erase(const Key& key) {
+		std::stack<pair> s;
+		auto place = _root;
+		node* next_item = nullptr;
+		while (place->key != key) {
+			if (less(key, place)) {
+				s.push(pair(place, false));
+				place = place->left;
+			}
+			else if (less(place, key)) {
+				s.push(pair(place, true));
+				place = place->right;
+			}
+		}
 
+		if (place == _root && place->key != key)
+			throw std::logic_error("Key isn't found");
+
+		if (place->right != nullptr) {
+			auto min = delete_min_in_right_subtree(&(place->right));
+			min->left = place->left;
+			min->right = place->right;
+			if (place->right != nullptr)
+				place->right->parent = min;
+			min->parent = place->parent;
+			place->left->parent = min;
+			next_item = min;
+		}
+		else {
+			if (place->left != nullptr)
+				place->left->parent = place->parent;
+			place->parent->left = place->left;
+			next_item = place->parent;
+		}
+		delete place;
+		s.push({ next_item,false });
+		balance_stack(s);
+		return iterator(next_item);
+	}
 	iterator begin() {
 		auto tmp = _root;
 		while (tmp->left != nullptr) {
@@ -248,9 +334,10 @@ public:
 	iterator end() {
 		return iterator(_end);
 	}
-
-	void debug() {
-		debug(_root);
+	iterator clear() {
+		clear(_root);
 	}
-
+	iterator find(const Key& key) {
+		return 
+	}
 };
