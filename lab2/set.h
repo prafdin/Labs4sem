@@ -4,8 +4,8 @@
 #include <string>
 #include <stdexcept>
 #include <stack>
-#include <queue>
 #include <utility>
+
 template<typename Key, typename Compare = std::less<Key>>
 class set {
 	struct node {
@@ -44,12 +44,12 @@ class set {
 		return Compare()(lhs->key, rhs);
 	}
 
-	static void clear(node* const root) {
+	static void _clear(node* const root) {
 		if (root == nullptr) {
 			return;
 		}
-		clear(root->left);
-		clear(root->right);
+		_clear(root->left);
+		_clear(root->right);
 		delete root;
 	}
 
@@ -124,7 +124,7 @@ class set {
 		return p;
 	}
 
-	node* find(const Key& key) {
+	node* _find(const Key& key) {
 		auto item = _root;
 		while (item.key != key) {
 			if (less(key, item))
@@ -231,34 +231,24 @@ public:
 	set() : _root(nullptr), _size(0), _end(new node()) {
 		_root = _end;
 	}
-
-	set(const set<Key, Compare>& rhs) {
-		//todo
-
-		set<TKey, TCompare>& operator=(const set<TKey, TCompare>&) = delete;
-
-		size_t size() const {
-			return _size;
-		}
-
-		// TODO return iterator
-		void insert(const TKey & key) {
-			_root = insert(_root, key);
-		}
-
-		void clear() {
-			clear(_root);
-			_root = nullptr;
-		}
-
-		void debug() {
-			debug(_root);
-		}
-
-		~set() {
-			clear();
-		}
-	};
+	set(const set& rhs):_root(nullptr), _size(0), _end(new node()) {
+		_root = _end;
+		for ( auto i : rhs)
+			insert(i);
+	}
+	set& operator=(const set& rhs) {
+		_size = 0;
+		_clear(_root);
+		_root = _end = new node();
+		for (auto& i : rhs)
+			this->insert(i);
+		return *this;
+	}
+	void swap(set& rhs) {
+		std::swap(_root, rhs._root);
+		std::swap(_end, rhs._end);
+		std::swap(_size, rhs._size)
+	}
 	iterator insert(const Key& key) {
 		std::stack<pair> s;
 		auto place = _root;
@@ -271,6 +261,8 @@ public:
 				s.push(pair(place, true));
 				place = place->right;
 			}
+			else
+				return iterator(place);
 		}
 		if (_root == nullptr)
 			_root = new node(nullptr, key);
@@ -283,6 +275,7 @@ public:
 				place = parent.first->left = new node(parent.first, key);
 		}
 		balance_stack(s);
+		++_size;
 		return iterator(place);
 	}
 	iterator erase(const Key& key) {
@@ -322,22 +315,34 @@ public:
 		delete place;
 		s.push({ next_item,false });
 		balance_stack(s);
+		--_size;
 		return iterator(next_item);
 	}
-	iterator begin() {
+	iterator begin () const {
 		auto tmp = _root;
 		while (tmp->left != nullptr) {
 			tmp = tmp->left;
 		}
 		return iterator(tmp);
 	}
-	iterator end() {
+	iterator end () const {
 		return iterator(_end);
 	}
-	iterator clear() {
-		clear(_root);
+	size_t size() {
+
+		return _size;
+	}
+	void clear() {
+		_clear(_root);
 	}
 	iterator find(const Key& key) {
-		return 
+		auto item = _find(key);
+		if (item == nullptr)
+			return end();
+		else
+			return iterator(item);
+	}
+	~set() {
+		clear();
 	}
 };
