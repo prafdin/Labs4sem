@@ -4,5 +4,5 @@ project(lab3)
 
 
 
-add_executable(lab3 main.cpp "dijkstra.h" "graph.h" "bellman_ford.h")
+add_executable(lab3 main.cpp "dijkstra.h" "graph.h" "bellman_ford.h" "metro.h" "dijkstra_metro.h")
 

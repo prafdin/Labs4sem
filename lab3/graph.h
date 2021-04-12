@@ -45,6 +45,7 @@ class graph {
 	}
 
 public:
+
 	using VertexIterator = typename TVertexContainer::iterator;
 	using AdjacentLinkIterator = typename TEdgeContainer::iterator;
 	class EdgeIterator {
@@ -188,29 +189,3 @@ public:
 
 };
 
-struct dijkstra_comparator {
-	std::unordered_map<char, double>& d;
-	const std::unordered_set<char>& used;
-
-	dijkstra_comparator(std::unordered_map<char, double>& d, const std::unordered_set<char>& used)
-		: d(d), used(used) { }
-
-	bool operator()(char src, char dst) {     // src < dst
-
-		auto end = used.end();
-		auto src_used = used.find(src) != end;
-		auto dst_used = used.find(dst) != end;
-		if (src_used && dst_used) {
-			return d[src] < d[dst];
-		}
-		else if (src_used) {
-			return false;
-		}
-		else if (dst_used) {
-			return true;
-		}
-		else {
-			return d[src] < d[dst];
-		}
-	}
-};
