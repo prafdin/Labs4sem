@@ -42,12 +42,16 @@ void print_path(std::ostream& stream, graph<vertex, edge>& a, vertex src, vertex
 	for (auto& i : path) {
 		if (i->edge->type == Connection::change) {
 			stream << "Пересадка на станции " << i->src->name << ": ";
-			stream << i->src->line_name  << " -> " << i->dst->line_name << " [" << i->edge->time << "]" << std::endl;
+			stream << i->src->line_name << "[" << i->src->interval / 2 << "]" << " -> " << i->dst->line_name; 
+			stream << "  [" << i->edge->time + i->src->interval / 2 << "]" << std::endl;
+			time += i->src->interval / 2;
 			time += i->edge->time;
 		}
 		else {
 			stream << "Проезд на линии " << i->src->line_name << ": ";
-			stream << i->src->name  << " -> " << i->dst->name << " [" << i->edge->time << "]" << std::endl;
+			stream << i->src->name << "[" << i->src->interval / 2 << "]" << " -> " << i->dst->name;
+			stream << "  [" << i->edge->time + i->src->interval / 2 << "]" << std::endl;
+			time += i->src->interval / 2;
 			time += i->edge->time;
 		}
 	}
@@ -64,7 +68,7 @@ int main() {
 	add_stations(stations, a);
 	add_routes(stations, routes, a);
 
-	print_path(std::cout, a, stations[20], stations[96]);
+	print_path(std::cout, a, stations[3], stations[1]);
 
 
 }

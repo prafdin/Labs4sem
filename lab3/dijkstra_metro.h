@@ -47,7 +47,7 @@ std::vector<AdjacentLinkIterator> dijkstra(graph<station_ptr, route_ptr>& g, sta
         if (v != src)
             d[v] = max;
         else
-            d[v] = 0;
+            d[v] = (size_t)src->interval/2;
     }
 
    dijkstra_comparator<station_ptr, size_t> comparator(d, used);
@@ -68,7 +68,7 @@ std::vector<AdjacentLinkIterator> dijkstra(graph<station_ptr, route_ptr>& g, sta
         while (begin != end) {
             auto& link = *begin;
             auto q = link.dst;
-            auto w = link.edge->time;
+            auto w = link.edge->time + link.src->interval/2;
             if (d[v] + w < d[q]) {
                 d[q] = d[v] + w;
                 p[q] = std::make_pair(v, begin);
