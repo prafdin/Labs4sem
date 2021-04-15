@@ -17,7 +17,7 @@ class Server final : public QObject {
 private:
 	QTcpServer _server;
 	std::unordered_map<QTcpSocket*, typename Protocol::Buffer> _buffers;
-	std::vector<std::string> _messages = { "first message", "second message", "third message" }; // TODO [Server] Убрать предопределённые сообщения
+	std::vector<std::string> _messages;
 
 private slots:
 	void newConnection();

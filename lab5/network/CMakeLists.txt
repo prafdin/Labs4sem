@@ -10,7 +10,7 @@ target_link_libraries("lab5-network-server" "lab5-network" Qt5::Core Qt5::Networ
 target_link_libraries("lab5-network-client" "lab5-network" Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets)
 
 if (WIN32)
-	#set_property(TARGET "lecture-16-message-client" PROPERTY WIN32_EXECUTABLE true)
+	set_property(TARGET "lab5-network-client" PROPERTY WIN32_EXECUTABLE true)
 
 	add_custom_command(TARGET "lab5-network-server" POST_BUILD COMMAND ${Qt5_DIR}/../../../bin/windeployqt $<TARGET_FILE:lab5-network-server>)
 	add_custom_command(TARGET "lab5-network-client" POST_BUILD COMMAND ${Qt5_DIR}/../../../bin/windeployqt $<TARGET_FILE:lab5-network-client>)
