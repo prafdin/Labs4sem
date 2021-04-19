@@ -39,10 +39,10 @@ void MainWindow::send_message() {
 	const auto buffer = Protocol::SendMessage::makeRequest(_message->toPlainText().toStdString() );
 	QHostAddress address(_address->text());
 	const auto serverRequest = new ServerRequest(address, _port->text().toUInt(), buffer, 5000);
-	_message->clear();
-	QObject::connect(serverRequest, &ServerRequest::responded, this, &MainWindow::responded);
 
+	QObject::connect(serverRequest, &ServerRequest::responded, this, &MainWindow::responded);
 	_messages.push_back(_message->toPlainText().toStdString());
+	_message->clear();
 	_history->setText(_history->toPlainText()+ _message->toPlainText()+"\n");
 
 }
@@ -53,6 +53,7 @@ void MainWindow::responded(Protocol::QueryType queryType, Protocol::Buffer& resp
 	{
 		if (_messages.size() == 0) { //first request messages
 			_status->setText(u8"Вы подключены к серверу");
+			_success_conect = true;
 			_timer.start();
 			connect(&_timer, &QTimer::timeout, this, &MainWindow::get_messages);
 		}
@@ -97,6 +98,8 @@ void MainWindow::responded(Protocol::QueryType queryType, Protocol::Buffer& resp
 }
 
 void MainWindow::failed() {
+	if (_success_conect)
+		return;
 	_status->setText(u8"Не удалось подключиться");
 	_buttonConnect -> setEnabled(true);
 
@@ -135,7 +138,7 @@ _address(new QLineEdit), _port(new QLineEdit), _buttonConnect(new QPushButton)
 	rootLayout->addLayout(adressLayout);
 	setLayout(rootLayout);
 
-	_timer.setInterval(10000);
+	_timer.setInterval(1000);
 
 	QObject::connect(_buttonConnect, &QAbstractButton::clicked, this, &MainWindow::try_connect);
 	QObject::connect(_buttonSend, &QAbstractButton::clicked, this, &MainWindow::send_message );

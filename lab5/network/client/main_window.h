@@ -27,6 +27,7 @@ private:
 	QTimer _timer;
 
 	std::vector<std::string> _messages;
+	bool _success_conect;
 
 private slots:
 	void try_connect();

@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
 	QCoreApplication app(argc, argv);
 
 	try {
-		Server server(QHostAddress::LocalHost, 5980);
+		Server server(QHostAddress::Any, 5000);
 		cout << "The server is running on " << server.address().toString().toStdString() << ":" << server.port() << "." << endl;
 		return QCoreApplication::exec();
 	}
